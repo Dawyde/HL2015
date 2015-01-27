@@ -79,7 +79,7 @@ function ConveyorBelt(application, div){
 	this.items = [new BeltItem(this.application.res("icon1"),{pr1:{x:3,y:119},pr2:{x:90,y:120}, att:0.5}),
 	new BeltItem(this.application.res("icon2"),{pr1:{x:3,y:120},pr2:{x:37,y:120}, att:0.8}),
 	new BeltItem(this.application.res("icon3"),{pr1:{x:45,y:120},pr2:{x:55,y:120}}),
-	new BeltItem(this.application.res("eddy"),{pr1:{x:35,y:100},pr2:{x:40,y:100},width:75,height:100, att:3}),
+	//new BeltItem(this.application.res("icon4"),{pr1:{x:35,y:100},pr2:{x:40,y:100},width:75,height:100, att:3})];
 	new BeltItem(this.application.res("icon4"),{pr1:{x:3,y:120},pr2:{x:46,y:120},width:48,height:120})];
 	this.positions = [-0.3,0.1,0.5,0.9,1.3];
 	this.moving = false;
