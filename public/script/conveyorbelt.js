@@ -44,7 +44,7 @@ BeltItem.prototype = {
 	},
 	update: function(){
 		if(this.type == 0) return;
-		this.pc+=2;
+		this.pc++;
 		if(this.pc >= 100){
 			this.pc = 0;
 			this.type = 0;
@@ -102,8 +102,8 @@ ConveyorBelt.prototype = {
 	animation: function(){
 		var moving = false;
 		if(this.movement != false){
-			this.movement.pc+=2;
-			if(this.movement.pc == 100){
+			this.movement.pc++;
+			if(this.movement.pc >= 100){
 				//On garde le dx du tapis
 				this.dx = -this.back.width + (this.movement.pc*this.width/100*0.4*this.movement.direction + this.dx)%this.back.width;
 				this.selected_item = (this.selected_item-this.movement.direction)%this.items.length;
@@ -188,11 +188,17 @@ ConveyorBelt.prototype = {
 		this.ctx.clearRect(0,0,this.width, this.canvas.height);
 		var cx = -this.back.width+(dx%this.back.width) + this.dx;
 		while(cx < this.width){
-			this.ctx.drawImage(this.application.res("test"), cx,this.height-this.back.height);
+			this.ctx.drawImage(this.application.res("test"), Math.round(cx),this.height-this.back.height);
 			cx += this.back.width;
 		}
+		var scale = 1;
 		for(var i=0;i<5;i++){
-			this.getItem(this.selected_item-2+i).draw(this.ctx, this.width*this.positions[i]+dx,this.height-this.back.height, this.scale)//i==2 && this.movement == false?1.5*this.scale:this.scale);
+			if(i==2){
+				if(this.movement.pc > 80){
+					this.
+				}
+			}
+			this.getItem(this.selected_item-2+i).draw(this.ctx, this.width*this.positions[i]+dx,this.height-this.back.height, i==2 && this.movement == false?1.5*this.scale:this.scale);
 		}
 	},
 	

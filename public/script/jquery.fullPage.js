@@ -567,7 +567,6 @@
 				//geting the last one, the current one on the screen
 				currentSection = $('.fp-section').eq(visibleSectionIndex);
 			}
-
 			if(!options.autoScrolling){
 				//executing only once the first time we reach the section
 				if(!currentSection.hasClass('active')){
@@ -645,6 +644,8 @@
 		* by 'automatically' scrolling a section or by using the default and normal scrolling.
 		*/
 		function scrolling(type, scrollable){
+			
+			console.log("test2"+type);
 			if (!isScrollAllowed[type]){
 				return;
 			}
@@ -784,6 +785,23 @@
 			if(options.autoScrolling){
 				// cross-browser wheel delta
 				e = window.event || e;
+				
+				
+				//Ajout pour le Hyblab, groupe Datastrophe
+				if((e.wheelDeltaX != undefined || e.deltaX != undefined) && !isMoving){
+					var dx = e.wheelDeltaX || e.deltaX;
+					var dy = e.wheelDeltaY || e.deltaY;
+					//Détection du scroll droite gauche
+					if(Math.abs(dx) > Math.abs(dy) && dx > 15){
+						(dx < 0) && $.isFunction( options.onSlideLeft ) && options.onSlideLeft.call(container);
+						(dx > 0) && $.isFunction( options.onSlideRight ) && options.onSlideRight.call(container);
+						isMoving = true;
+						setTimeout(function () {
+							isMoving = false;
+						}, scrollDelay*2);
+						return false;
+					}
+				}
 				var delta = Math.max(-1, Math.min(1,
 						(e.wheelDelta || -e.deltaY || -e.detail)));
 

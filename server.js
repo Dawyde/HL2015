@@ -4,7 +4,6 @@ app.get('/', function(req, res){
   res.send('hello world');
 });
 
-console.log("TA MERE ");
 app.use(express.static(__dirname + '/public'));
 app.listen(8080, '0.0.0.0');
 //coucou :) !! le réseau est moche et lent
