@@ -9,21 +9,35 @@ function ImageItem(res, options){
 	this.res = res;
 	this.options = $.extend({
 		centerX:res.width/2,
-		centerY:res.height/2
+		centerY:res.height/2,
+		width:res.width,
+		height: res.height
 	}, options);
 }
 ImageItem.prototype = {
+	setWidth: function(w){
+		this.width = w;
+		this.height = w;
+		this.options.centerX = w/2;
+		this.options.centerY = w/2;
+	},
 	draw: function(ctx, x, y, rotation,scale){
 		if(rotation != 0){
 			ctx.save();
 			ctx.translate(x+this.options.centerX*scale,y+this.options.centerY*scale);
 			ctx.rotate(rotation/180*Math.PI);
-			ctx.drawImage(this.res, -this.options.centerX*scale, -this.options.centerY*scale,this.res.width*scale,this.res.height*scale);
+			ctx.drawImage(this.res, -this.options.centerX*scale, -this.options.centerY*scale,this.options.width*scale,this.options.height*scale);
 			ctx.restore();
 		}
 		else{
-			ctx.drawImage(this.res, x, y, this.res.width*scale,this.res.height*scale);
+			ctx.drawImage(this.res, x, y, this.options.width*scale,this.options.height*scale);
 		}
+	},
+	width: function(){
+		return this.options.width;
+	},
+	height: function(){
+		return this.options.height;
 	}
 }
 
@@ -104,11 +118,10 @@ function ConveyorBelt(application, div){
 	//On met en place les valeurs de fonctionnement
 	this.selected_item = 0;//Item sélectionné
 	this.movement = false;//Aucun mouvement actuellement
-	this.items = [new BeltItem(this.application.res("icon1"),{pr1:{x:3,y:119},pr2:{x:90,y:120}, att:0.5}),
-	new BeltItem(this.application.res("icon2"),{pr1:{x:3,y:120},pr2:{x:37,y:120}, att:0.8}),
-	new BeltItem(this.application.res("icon3"),{pr1:{x:45,y:120},pr2:{x:55,y:120}}),
-	new BeltItem(this.application.res("eddy"),{pr1:{x:35,y:100},pr2:{x:40,y:100},width:75,height:100, att:3}),
-	new BeltItem(this.application.res("icon4"),{pr1:{x:3,y:120},pr2:{x:46,y:120},width:48,height:120})];
+	this.items = [
+	new BeltItem(this.application.res("bouteilles"),{pr1:{x:45,y:120},pr2:{x:120,y:120}}),
+	new BeltItem(this.application.res("miel"),{pr1:{x:10,y:135},pr2:{x:130,y:135},width:120,height:125, att:0.5}),
+	new BeltItem(this.application.res("pomme"),{pr1:{x:10,y:135},pr2:{x:130,y:135},width:140,height:110, att:0.2})];
 	this.positions = [-0.3,0.1,0.5,0.9,1.3];
 	this.moving = false;
 	this.target = null;
@@ -126,8 +139,8 @@ function ConveyorBelt(application, div){
 	
 	
 	this.back = this.application.res("test");
-	this.wheel = new ImageItem(this.application.res("wheel"));
-	this.b = {w:this.back.width*0.5, h:this.back.height*0.6, h2:this.back.height*0.5};
+	this.b = {w:this.back.width*0.75, h:this.back.height*0.9, h2:this.back.height*0.6};
+	this.wheel = new ImageItem(this.application.res("wheel"),{width:this.back.height*0.49, height:this.back.height*0.49, centerX:this.back.height*0.49/2, centerY:this.back.height*0.49/2});
 	this.canusecache = this.testCache();
 	this.resize();
 }
@@ -177,7 +190,7 @@ ConveyorBelt.prototype = {
 		this.height = this.application.height()*0.44;
 		if(this.height > 450) this.height = 450;
 		this.speed_rate = Math.max(3,this.width/800);
-		this.scale = this.height/260
+		this.scale = this.height/300
 		this.canvas.width = this.width;
 		this.dx = 0;
 		this.canvas.height = this.height;
@@ -248,7 +261,7 @@ ConveyorBelt.prototype = {
 			var cx = -this.b.w*0.1;
 			while(cx < this.width){
 				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
-				this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.26), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
+				this.wheel.draw(this.ctx, Math.round(cx+this.wheel.width()*0.26), this.height-this.wheel.height(),this.movement.pc*3.6*this.movement.direction,1);
 				cx += this.b.w*0.8;
 			}
 		}
@@ -261,7 +274,7 @@ ConveyorBelt.prototype = {
 			else{
 				this.ctx.putImageData(this.back_cache1,0,this.height-this.b.h)
 			}
-			this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.26), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
+			this.wheel.draw(this.ctx, Math.round(cx+this.wheel.width()*0.26), this.height-this.wheel.height(),this.movement.pc*3.6*this.movement.direction,1);
 			var b = this.ctx.getImageData(0,this.height-this.b.h,this.b.w*0.8,this.b.h);
 			cx += this.b.w*0.8;
 			while(cx < this.width){
