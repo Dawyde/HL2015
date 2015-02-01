@@ -1,0 +1,38 @@
+body{
+    background-color:#F9EFE1;
+}
+
+
+/*
+    Slide principale
+*/
+.homepage .timeline{
+    height:10%;
+    background:rgba(255,255,255,0.5);
+}
+
+.homepage .conveyorbelt{
+    height:45%;
+    padding:0px;
+}
+.homepage .conveyorbelt div{
+    margin:0px;
+    height:100%;
+}
+
+.homepage .visualisations{
+    height:42.5%;
+    background-color:#D8C5B2;
+    margin-bottom:2.5%;
+    width:100%;
+}
+
+.homepage .visualisations div{
+    width:33%;
+    height:100%;
+    border-left: 2px dashed #F9EFE1;
+    display:inline-block;
+}
+.homepage .visualisations div:first-child{
+    border-left: none;
+}

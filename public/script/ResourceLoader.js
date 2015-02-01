@@ -9,11 +9,15 @@ function ResourceLoader(){
 }
 
 ResourceLoader.prototype = {
-	load: function(name, url){
+	load: function(name, url, options){
 		this.total++;
 		var img = new Image();
 		var self = this;
 		img.onload = function(){
+			if(options){
+				if(options.width) img.width = options.width;
+				if(options.height) img.height = options.height;
+			}
 			self.loaded++;
 			if(self.loaded >= self.total && self.onLoad){
 				self.onLoad.call(self);

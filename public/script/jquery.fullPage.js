@@ -64,7 +64,9 @@
 			'afterResize': null,
 			'afterReBuild': null,
 			'afterSlideLoad': null,
-			'onSlideLeave': null
+			'onSlideLeave': null,
+			'onSlideLeft': null,
+			'onSlideRight': null
 		}, options);
 
 	    displayWarnings();

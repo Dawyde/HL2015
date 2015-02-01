@@ -14,12 +14,14 @@ function DataStrophe(div){
 		if(self.onLoad) self.onLoad.call();
 	};
 	
-	this.resources.load("test","style/test.png");
-	this.resources.load("icon1","style/sac.png");
-	this.resources.load("icon2","style/soda.png");
-	this.resources.load("icon3","style/pomme.png");
-	this.resources.load("icon4","style/wine47.svg");
-	this.resources.load("eddy","style/malou.png");
+	this.resources.load("test","/style/tapis.png",{width:300,height:150});
+	this.resources.load("icon1","/style/sac.png");
+	this.resources.load("icon2","/style/soda.png");
+	this.resources.load("icon3","/style/pomme.png");
+	this.resources.load("icon4","/style/wine47.svg");
+	this.resources.load("eddy","/style/malou.png");
+	this.resources.load("jauge","/style/masque_jauge.png");
+	this.resources.load("wheel","/style/wheel.png",{width:49,height:49});
 	
 	
 	

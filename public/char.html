@@ -6,6 +6,12 @@
 <script >
 var r, d;
 $(function () {
+    console.log("test");
+    $.ajax({
+        url:"data.json",
+        contentType:"json",
+        success: function(datas){
+            console.log(datas);
     d = {
         chart: {
             type: 'bar'
@@ -57,20 +63,18 @@ $(function () {
         credits: {
             enabled: false
         },
-        series: [{
-            name: 'Tomates',
-            data: [107, 31, 635, 203, 2]
-        }]
+        series: datas
     };
     r = $('#container').highcharts(d);
 	console.log(r[0]);
+    }});
     
-    setTimeout(function(){
+   /* setTimeout(function(){
         //alert('test');
 		console.log("test");
         $('#container').highcharts().series[0].setData([507, 31, 635, 203, 105]);
         $('#container').highcharts().xAxis[0].setCategories(['Finistère', 'Loire-Atlantique', 'Lot et Garonne', 'Vendée', 'Morbian']);
-    }, 2000);
+    }, 2000);*/
 });
 </script>
 </head>

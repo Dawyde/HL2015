@@ -1,0 +1,52 @@
+<html>
+<head>
+	<title>DataStrophe</title>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="stylesheet" type="text/css" href="style/jquery.fullPage.css" />
+	<link rel="stylesheet" type="text/css" href="style/style.css" />
+
+	<script src="script/jquery-1.11.2.min.js"></script>
+
+	<!-- This following line is needed only in case of using other easing effect rather than "linear", "swing" or "easeInQuart". You can also add the full jQuery UI instead of this file if you prefer -->
+	<script src="script/jquery.easings.min.js"></script>
+
+
+	<!-- This following line needed in the case of using the plugin option `scrollOverflow:true` -->
+	<script type="text/javascript" src="script/jquery.slimscroll.min.js"></script>
+
+	<script type="text/javascript" src="script/jquery.fullPage.js"></script>
+	<script type="text/javascript" src="script/datastrophe.js"></script>
+	<script type="text/javascript" src="script/conveyorbelt.js"></script>
+	<script type="text/javascript" src="script/ResourceLoader.js"></script>
+	<script type="text/javascript" src="script/movements.js"></script>
+	<script type="text/javascript" src="script/jauge.js"></script>
+	<script type="text/javascript" src="script/slider.js"></script>
+	<script type="text/javascript" src="script/imagescale.js"></script>
+	<script type="text/javascript" src="script/counter.js"></script>
+	<script type="text/javascript" src="script/chart1.js"></script>
+	<script type="text/javascript">
+	var c;
+	var div;
+	$(document).ready(function(){
+	
+		var t = new DataStrophe(0);
+		var j , s, i, counter;
+		t.onLoad = function(){
+			j = new Chart1(t, $("#test")[0]);
+		}
+		
+	});
+	
+	
+	</script>
+</head>
+<body>
+	<div id="test" style="width:150px;"></div>
+	<div id="test3" style="width:150px;"></div>
+	<div style="width:300px;height:70px;" id="slider"></div>
+	<div style="width:300px;height:250px;" id="test2"></div>
+</body>
+</html>

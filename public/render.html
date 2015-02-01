@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<link rel="stylesheet" type="text/css" href="style/jquery.fullPage.css" />
-	<link rel="stylesheet" type="text/css" href="style/style.css" />
+	<link rel="stylesheet" type="text/css" href="style/render.css" />
 
 	<script src="script/jquery-1.11.2.min.js"></script>
 
@@ -25,12 +25,12 @@
 	<script type="text/javascript">
 	var c;
 	var div;
+	var cache;
 	$(document).ready(function(){
-	
 	document.location.href = "#";
 		var t = new DataStrophe(0);
 		t.onLoad = function(){
-			c = new ConveyorBelt(t, $("#s1_canvas")[0]);
+			c = new ConveyorBelt(t, $("#coveyorbelt")[0]);
 			$.fn.fullpage.reBuild();
 			c.onStartMovement = function(id){
 				console.log("Mouvement vers : "+id);
@@ -60,21 +60,14 @@
 </head>
 <body>
 <div id="fullpage">
-    <div class="section s1">
-		<div class="header">
-			test
-			<input type="button" onClick="c.moveLeft();" value="Left"/>
-			<input type="button" onClick="c.moveRight();" value="Right"/><br/>
+    <div class="section homepage">
+		<div class="timeline">
 			
-			<input type="button" onClick="c.moveTo(0);" value="Sac"/>
-			<input type="button" onClick="c.moveTo(1);" value="Soda"/>
-			<input type="button" onClick="c.moveTo(2);" value="Pomme"/>
-			<input type="button" onClick="c.moveTo(3);" value="Vin"/>
 		</div>
-		<div class="canvas" id="s1_canvas">
+		<div class="conveyorbelt" id="coveyorbelt">
 
 		</div>
-		<div class="databloc">
+		<div class="visualisations">
 			<div id="g1">
 			</div>
 			<div id="g2">

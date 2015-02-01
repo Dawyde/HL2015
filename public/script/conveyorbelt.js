@@ -5,6 +5,29 @@
 	/!\ bien notifier des redimensionnements /!\
 */
 
+function ImageItem(res, options){
+	this.res = res;
+	this.options = $.extend({
+		centerX:res.width/2,
+		centerY:res.height/2
+	}, options);
+}
+ImageItem.prototype = {
+	draw: function(ctx, x, y, rotation,scale){
+		if(rotation != 0){
+			ctx.save();
+			ctx.translate(x+this.options.centerX*scale,y+this.options.centerY*scale);
+			ctx.rotate(rotation/180*Math.PI);
+			ctx.drawImage(this.res, -this.options.centerX*scale, -this.options.centerY*scale,this.res.width*scale,this.res.height*scale);
+			ctx.restore();
+		}
+		else{
+			ctx.drawImage(this.res, x, y, this.res.width*scale,this.res.height*scale);
+		}
+	}
+}
+
+
 function BeltItem(res, options){
 	this.res = res;
 	this.x = 0;
@@ -68,10 +91,15 @@ function ConveyorBelt(application, div){
 	this.div = div;
 	this.application = application;
 	
+	this.speed_rate = 1;
+	
 	//On crée le canvas
 	this.canvas = document.createElement("canvas");
 	this.div.appendChild(this.canvas);
 	this.ctx = this.canvas.getContext("2d");
+	
+	//On définit les effets de scale
+	this.sacle_transition = {type: Math.easeInCubic, duration: 30};
 	
 	//On met en place les valeurs de fonctionnement
 	this.selected_item = 0;//Item sélectionné
@@ -79,33 +107,39 @@ function ConveyorBelt(application, div){
 	this.items = [new BeltItem(this.application.res("icon1"),{pr1:{x:3,y:119},pr2:{x:90,y:120}, att:0.5}),
 	new BeltItem(this.application.res("icon2"),{pr1:{x:3,y:120},pr2:{x:37,y:120}, att:0.8}),
 	new BeltItem(this.application.res("icon3"),{pr1:{x:45,y:120},pr2:{x:55,y:120}}),
-	//new BeltItem(this.application.res("icon4"),{pr1:{x:35,y:100},pr2:{x:40,y:100},width:75,height:100, att:3})];
+	new BeltItem(this.application.res("eddy"),{pr1:{x:35,y:100},pr2:{x:40,y:100},width:75,height:100, att:3}),
 	new BeltItem(this.application.res("icon4"),{pr1:{x:3,y:120},pr2:{x:46,y:120},width:48,height:120})];
 	this.positions = [-0.3,0.1,0.5,0.9,1.3];
 	this.moving = false;
 	this.target = null;
+	this.start = null;
 	
 	this.width = 0;
 	this.height = 0;
 	this.dx = 0;
 	this.scale = 1.5;
+	
+	
 	//Listeners
 	var self = this;
 	$(window).resize(function(){self.resize();});
 	
 	
 	this.back = this.application.res("test");
+	this.wheel = new ImageItem(this.application.res("wheel"));
+	this.b = {w:this.back.width*0.5, h:this.back.height*0.6, h2:this.back.height*0.5};
+	this.canusecache = this.testCache();
 	this.resize();
 }
 
 ConveyorBelt.prototype = {
 	animation: function(){
+		var start = new Date().getTime();
 		var moving = false;
 		if(this.movement != false){
-			this.movement.pc++;
+			this.movement.pc+=this.movement.speed;
 			if(this.movement.pc >= 100){
 				//On garde le dx du tapis
-				this.dx = -this.back.width + (this.movement.pc*this.width/100*0.4*this.movement.direction + this.dx)%this.back.width;
 				this.selected_item = (this.selected_item-this.movement.direction)%this.items.length;
 				if(this.selected_item < 0) this.selected_item += this.items.length;
 				
@@ -127,19 +161,23 @@ ConveyorBelt.prototype = {
 			this.getItem(this.selected_item-2+i).update();
 			if(this.getItem(this.selected_item-2+i).inMovement()) moving = true;
 		}
-		
+		this.draw();
 		if(moving){
-			var self = this;
-			setTimeout(function(){ self.animation(); },20);
+			var time = (new Date().getTime()-start);
+			if(time >= 20) this.animation();
+			else{
+				var self = this;
+				setTimeout(function(){ self.animation(); },20-time);
+			}
 		}
 		else this.moving = false;
-		this.draw();
 	},
 	resize: function(){
 		this.width = this.application.width();
-		this.height = Math.floor(this.application.height()/3);
-		if(this.height > 300) this.height = 300;
-		this.scale = this.height/250
+		this.height = this.application.height()*0.44;
+		if(this.height > 450) this.height = 450;
+		this.speed_rate = Math.max(3,this.width/800);
+		this.scale = this.height/260
 		this.canvas.width = this.width;
 		this.dx = 0;
 		this.canvas.height = this.height;
@@ -152,6 +190,13 @@ ConveyorBelt.prototype = {
 		}
 		return this.items[index%this.items.length];
 	},
+	getId: function(index){
+		if(this.items.length == 0) return null;
+		while(index < 0){
+			index += this.items.length;
+		}
+		return index%this.items.length;
+	},
 	moveLeft: function(){
 		this.move(1);
 	},
@@ -160,7 +205,8 @@ ConveyorBelt.prototype = {
 	},
 	move: function(d){
 		if(this.movement != false) return;
-		this.movement = {direction:d, pc: 0};
+		this.movement = {direction:d, pc: 0, speed:this.speed_rate};
+		this.start = this.selected_item;
 		for(var i=0;i<5;i++)this.getItem(this.selected_item-2+i).setMovement(-d);
 		if(!this.moving){
 			this.moving = true;
@@ -178,6 +224,18 @@ ConveyorBelt.prototype = {
 		this.target = id;
 		if(d1 > d2) this.move(1);
 		else this.move(-1);
+		this.movement.speed = this.speed_rate*Math.min(d1,d2);
+	},
+	testCache: function(){
+		try{
+			this.ctx.drawImage(this.back, 0,0, this.b.w, this.b.h);
+			this.ctx.getImageData(0,this.height-this.b.h,150,this.b.h);
+			return true;
+		}
+		catch(e){
+			console.log(e);
+			return false;
+		}
 	},
 	draw: function(){
 		var dx = 0;
@@ -186,19 +244,54 @@ ConveyorBelt.prototype = {
 			//dx = Math.easeInQuad(this.movement.pc, 0, 0.4*this.width, 100)*this.movement.direction;
 		}
 		this.ctx.clearRect(0,0,this.width, this.canvas.height);
-		var cx = -this.back.width+(dx%this.back.width) + this.dx;
-		while(cx < this.width){
-			this.ctx.drawImage(this.application.res("test"), Math.round(cx),this.height-this.back.height);
-			cx += this.back.width;
+		if(!this.canusecache){
+			var cx = -this.b.w*0.1;
+			while(cx < this.width){
+				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
+				this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.51), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
+				cx += this.b.w*0.8;
+			}
 		}
+		else{
+			var cx = 0;//-this.b.w*0.1;
+			if(!this.back_cache1){
+				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
+				this.back_cache1 = this.ctx.getImageData(0,this.height-this.b.h,this.b.w,this.b.h);
+			}
+			else{
+				this.ctx.putImageData(this.back_cache1,0,this.height-this.b.h)
+			}
+			this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.255), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
+			var b = this.ctx.getImageData(0,this.height-this.b.h,this.b.w*0.8,this.b.h);
+			cx += this.b.w*0.8;
+			while(cx < this.width){
+				this.ctx.putImageData(b,cx,this.height-this.b.h);
+				cx += this.b.w*0.8;
+			}
+		}
+		
 		var scale = 1;
 		for(var i=0;i<5;i++){
-			if(i==2){
-				if(this.movement.pc > 80){
-					this.
+			scale = 1
+			//Transition de taille ?
+			if(this.sacle_transition){
+				if(this.movement == false){
+					if(i == 2) scale = 1.5
+				}
+				else{
+					if(i==2){
+						if((this.target == null || this.getId(this.selected_item) == this.start) && this.movement.pc < this.sacle_transition.duration){
+							scale =  1.5-this.sacle_transition.type(this.movement.pc, 0, 0.5, this.sacle_transition.duration);
+						}
+					}
+					if((this.target == null || this.getId(this.selected_item-this.movement.direction) == this.target) && i==2-this.movement.direction){
+						if(this.movement.pc > 100-this.sacle_transition.duration){
+							scale =  1+this.sacle_transition.type(this.movement.pc-(100-this.sacle_transition.duration), 0, 0.5, this.sacle_transition.duration);
+						}
+					}
 				}
 			}
-			this.getItem(this.selected_item-2+i).draw(this.ctx, this.width*this.positions[i]+dx,this.height-this.back.height, i==2 && this.movement == false?1.5*this.scale:this.scale);
+			this.getItem(this.selected_item-2+i).draw(this.ctx, this.width*this.positions[i]+dx,this.height-this.b.h2, scale*this.scale);
 		}
 	},
 	
