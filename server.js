@@ -5,7 +5,8 @@ app.get('/', function(req, res){
 });
 
 app.use(express.static(__dirname + '/public'));
-app.listen(8080, '0.0.0.0');
+//app.listen(8080, '0.0.0.0');
+app.listen(8080, 'localhost');
 //coucou :) !! le réseau est moche et lent
 // Yolo c'est moi que j'ai écrit d'abord
 // David Coucou !
