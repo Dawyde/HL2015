@@ -248,7 +248,7 @@ ConveyorBelt.prototype = {
 			var cx = -this.b.w*0.1;
 			while(cx < this.width){
 				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
-				this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.51), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
+				this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.26), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
 				cx += this.b.w*0.8;
 			}
 		}
@@ -261,7 +261,7 @@ ConveyorBelt.prototype = {
 			else{
 				this.ctx.putImageData(this.back_cache1,0,this.height-this.b.h)
 			}
-			this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.255), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
+			this.wheel.draw(this.ctx, Math.round(cx+this.wheel.res.width*0.26), this.height-this.wheel.res.height,this.movement.pc*3.6*this.movement.direction,1);
 			var b = this.ctx.getImageData(0,this.height-this.b.h,this.b.w*0.8,this.b.h);
 			cx += this.b.w*0.8;
 			while(cx < this.width){
