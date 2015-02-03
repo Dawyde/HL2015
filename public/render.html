@@ -22,8 +22,9 @@
 	<script type="text/javascript" src="script/conveyorbelt.js"></script>
 	<script type="text/javascript" src="script/ResourceLoader.js"></script>
 	<script type="text/javascript" src="script/movements.js"></script>
+	<script type="text/javascript" src="script/slider.js"></script>
 	<script type="text/javascript">
-	var c;
+	var c, s;
 	var div;
 	var cache;
 	$(document).ready(function(){
@@ -42,7 +43,6 @@
 		}
 		
 		div = $(".s1")[0];
-		$(document).click(function(){c.moveLeft();});
 		
 		$('#fullpage').fullpage({
 		 anchors: ['firstPage', 'secondPage', 'thirdPage', 'fourthPage', 'lastPage'],
@@ -62,8 +62,13 @@
 <body>
 <div id="fullpage">
     <div class="section homepage">
-		<div class="timeline">
-			
+		<div class="timeline" id="timeline">
+			<div>
+			<div class="backline"> </div>
+			<img src="style/pomme1.svg" onClick='c.moveTo(2); return false;'/>
+			<img src="style/bouteille1.svg" onClick='c.moveTo(0); return false;'/>
+			<img src="style/miel.svg" onClick='c.moveTo(1); return false;'/>
+			</div>
 		</div>
 		<div class="conveyorbelt" id="coveyorbelt">
 

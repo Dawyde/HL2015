@@ -8,7 +8,8 @@ body{
 */
 .homepage .timeline{
     height:10%;
-    background:rgba(255,255,255,0.5);
+    text-align:center;
+    padding-top:0.5%;
 }
 
 .homepage .conveyorbelt{
@@ -35,4 +36,26 @@ body{
 }
 .homepage .visualisations div:first-child{
     border-left: none;
+}
+.timeline .backline{
+	width:50%;
+	position:relative;
+	height:2px;
+	/*border:1px solid black;*/
+	background-color:#000100;
+    margin:auto;
+	top:28px;
+}
+.timeline img{
+    position:relative;
+    top:10px;
+    height:35px;
+    margin-left:2%;
+    margin-right:2%;
+    cursor:pointer;
+    -webkit-transition: transform 0.1s ease;
+    transition: transform 0.1s ease;
+}
+.timeline img:hover{
+   transform: scale(1.25);
 }
