@@ -30,13 +30,14 @@
 	<script type="text/javascript" src="script/libs/snapsvg.js"></script>
 	<script type="text/javascript">
 	var c;
+		var j , s, i, counter;
 	var div;
 	$(document).ready(function(){
 	
 		var t = new DataStrophe(0);
-		var j , s, i, counter;
 		t.onLoad = function(){
-			j = new BIO(t, $("#test")[0]);
+			j = new Jauge(t, $("#test")[0]);
+			j.setValue(45);
 		}
 	});
 	
@@ -44,6 +45,6 @@
 	</script>
 </head>
 <body>
-	<div id="test"></div>
+	<div id="test" style="width:20%;"></div>
 </body>
 </html>

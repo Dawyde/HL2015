@@ -10,6 +10,7 @@ function Jauge(application, div, options, datas){
     
     this.options = $.extend({
         image: application.res("jauge"),
+        counter: true,
         animation: Math.easeOutCubic
     }, options);
     
@@ -29,11 +30,19 @@ function Jauge(application, div, options, datas){
     this.div_container.appendChild(this.mask_img);
     this.div_container.appendChild(this.div_value);
     this.div.appendChild(this.div_container);
+    if(this.options.counter){
+        this.div_counter = document.createElement("div");
+        this.div_counter.className="counter";
+        this.div.appendChild(this.div_counter);
+        this.div_counter.innerHTML="0%";
+    }
     
 }
 
 Jauge.prototype = {
     setValue: function(value){
+        if(value > 100) value = 100;
+        if(value < 0) value = 0;
         this.start_value = this.value;
         this.end_value = value;
         this.startAnimation();
@@ -43,24 +52,26 @@ Jauge.prototype = {
             clearTimeout(this.animation.timeout);
         }
         this.animation = {pc:0};
-        this.animate();
+        if(this.options.counter) this.animate();
+        $(this.div_value).css({'margin-top': (-this.end_value)+"px"});
     },
     animate:function(){
-        this.animation.pc+=2;
+        this.animation.pc+=6.25;
         
         //Avancement avec la formule
         var a = this.options.animation(this.animation.pc, 0, 1, 100);
+        var a = this.animation.pc/100;
         this.value = this.start_value + (this.end_value-this.start_value)*a;
         
         if(this.animation.pc >= 100){
             this.value = this.end_value;
-             $(this.div_value).css("margin-top",(-this.value)+'%');
+             $(this.div_counter).html(Math.round(this.value)+"%");
              this.animation = false;
         }
         else{
-            $(this.div_value).css("margin-top",(-this.value)+'%');
+             $(this.div_counter).html(Math.round(this.value)+"%");
             var self = this;
-            this.animation.timeout = setTimeout(function(){self.animate();},20);
+            this.animation.timeout = setTimeout(function(){self.animate();},50);
         } 
     }
 };

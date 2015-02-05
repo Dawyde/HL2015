@@ -65,7 +65,6 @@ BeltGroup.prototype = {
 		if(this.rect.y1 < y1) this.rect.y1 = y1;
 		this.width = this.rect.x1-this.rect.x0;
 		this.height = this.rect.y1-this.rect.y0;
-		console.log(this);
 	},
 	setMovement:function(type){
 		if(this.items.length == 0) return;
@@ -91,7 +90,6 @@ BeltGroup.prototype = {
 }
 
 function BeltItem(res, options){
-	console.log(res)
 	this.res = res;
 	this.x = 0;
 	//Points de rotation
@@ -250,10 +248,10 @@ ConveyorBelt.prototype = {
 	},
 	resize: function(){
 		this.width = this.application.width();
-		this.height = this.application.height()*0.44;
-		if(this.height > 450) this.height = 450;
+		this.height = Math.ceil(this.application.height()*0.51);
+		//if(this.height > 500) this.height = 500;
 		this.speed_rate = Math.max(3,this.width/400);
-		this.scale = this.height/300
+		this.scale = this.height/380
 		this.canvas.width = this.width;
 		this.dx = 0;
 		this.canvas.height = this.height;
@@ -297,6 +295,11 @@ ConveyorBelt.prototype = {
 		//On lance l'événement ?
 		if(this.onStartMovement) this.onStartMovement.call(this, this.target==null?((this.selected_item-d)<0?(this.selected_item+this.items.length-d):((this.selected_item-d)%this.items.length)):this.target);
 	},
+	changeTo: function(id){
+		if(id < 0 || id >= this.items.length || this.selected_item == id) return;
+		this.selected_item = id;
+		this.draw();
+	},
 	moveTo: function(id){
 		if(id < 0 || id >= this.items.length || this.selected_item == id) return;
 		var d1 = id-this.selected_item;
@@ -315,7 +318,6 @@ ConveyorBelt.prototype = {
 			return true;
 		}
 		catch(e){
-			console.log(e);
 			return false;
 		}
 	},
@@ -328,6 +330,8 @@ ConveyorBelt.prototype = {
 		this.ctx.clearRect(0,0,this.width, this.canvas.height);
 		if(!this.canusecache){
 			var cx = -this.b.w*0.1;
+			this.ctx.fillStyle = "#D8C5B2";
+			this.ctx.fillRect(0, this.height-this.b.h*0.8, this.width, this.b.h*0.8);
 			while(cx < this.width){
 				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
 				this.wheel.draw(this.ctx, Math.round(cx+this.wheel.width()*0.26), this.height-this.wheel.height(),this.movement.pc*3.6*this.movement.direction,1);
@@ -335,8 +339,10 @@ ConveyorBelt.prototype = {
 			}
 		}
 		else{
-			var cx = 0;//-this.b.w*0.1;
+			var cx = 0;//-this.b.w*0.1
 			if(!this.back_cache1){
+			this.ctx.fillStyle = "#D8C5B2";
+				this.ctx.fillRect(0, this.height-this.b.h*0.8, this.b.w, this.b.h*0.8);
 				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
 				this.back_cache1 = this.ctx.getImageData(0,this.height-this.b.h,this.b.w,this.b.h);
 			}
@@ -345,10 +351,10 @@ ConveyorBelt.prototype = {
 			}
 			this.wheel.draw(this.ctx, Math.round(cx+this.wheel.width()*0.26), this.height-this.wheel.height(),this.movement.pc*3.6*this.movement.direction,1);
 			var b = this.ctx.getImageData(0,this.height-this.b.h,this.b.w*0.8,this.b.h);
-			cx += this.b.w*0.8;
+			cx += Math.floor(this.b.w*0.8);
 			while(cx < this.width){
 				this.ctx.putImageData(b,cx,this.height-this.b.h);
-				cx += this.b.w*0.8;
+			cx += Math.floor(this.b.w*0.8);
 			}
 		}
 		

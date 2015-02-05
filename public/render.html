@@ -8,81 +8,137 @@
 	<link rel="stylesheet" type="text/css" href="style/jquery.fullPage.css" />
 	<link rel="stylesheet" type="text/css" href="style/render.css" />
 
-	<script src="script/jquery-1.11.2.min.js"></script>
+	<script src="script/libs/jquery-1.11.2.min.js"></script>
 
 	<!-- This following line is needed only in case of using other easing effect rather than "linear", "swing" or "easeInQuart". You can also add the full jQuery UI instead of this file if you prefer -->
-	<script src="script/jquery.easings.min.js"></script>
+	<script src="script/libs/jquery.easings.min.js"></script>
 
 
 	<!-- This following line needed in the case of using the plugin option `scrollOverflow:true` -->
-	<script type="text/javascript" src="script/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript" src="script/libs/jquery.slimscroll.min.js"></script>
 
-	<script type="text/javascript" src="script/jquery.fullPage.js"></script>
+	<script type="text/javascript" src="script/libs/jquery.fullPage.js"></script>
 	<script type="text/javascript" src="script/datastrophe.js"></script>
 	<script type="text/javascript" src="script/conveyorbelt.js"></script>
 	<script type="text/javascript" src="script/ResourceLoader.js"></script>
 	<script type="text/javascript" src="script/movements.js"></script>
 	<script type="text/javascript" src="script/slider.js"></script>
+	<script type="text/javascript" src="script/jauge.js"></script>
+	<script type="text/javascript" src="script/libs/snapsvg.js"></script>
 	<script type="text/javascript">
-	var c, s;
-	var div;
-	var cache;
+	var dts;
 	$(document).ready(function(){
-	document.location.href = "#";
-		var t = new DataStrophe(0);
-		t.onLoad = function(){
-			c = new ConveyorBelt(t, $("#coveyorbelt")[0]);
-			$.fn.fullpage.reBuild();
-			c.onStartMovement = function(id){
-				console.log("Mouvement vers : "+id);
-			}
-			c.onStopMovement = function(id){
-				console.log("Stop vers : "+id);
-			}
-		//$("#fullpage")[0].removeChild(div);
+		dts =  new DataStrophe(0);
+		dts.onLoad = function(){
 		}
-		
-		div = $(".s1")[0];
-		
-		$('#fullpage').fullpage({
-		 anchors: ['firstPage', 'secondPage', 'thirdPage', 'fourthPage', 'lastPage'],
-    menu: '#myMenu',
-			onSlideLeft: function(){ c.moveLeft()},
-			onSlideRight: function(){ c.moveRight()},
-			afterLoad: function(anchorLink, index){
-				console.log("Vous êtes sur la slide : "+index)
-				
-			}
-		});
-		
 	});
 	
 	</script>
 </head>
 <body>
+<div class="timeline" id="timeline">
+	<div class="title"><span>Le bio</span> au menu des français</div>
+	<div>
+	<div class="backline"> </div>
+	<div class="bg2"> </div>
+	<img src="style/pomme1.svg" onClick='dts.changeProduct(2); return false;'/>
+	<img src="style/bouteille1.svg" onClick='dts.changeProduct(0); return false;'/>
+	<img src="style/miel.svg" onClick='dts.changeProduct(1); return false;'/>
+	</div>
+</div>
 <div id="fullpage">
     <div class="section homepage">
-		<div class="timeline" id="timeline">
-			<div>
-			<div class="backline"> </div>
-			<img src="style/pomme1.svg" onClick='c.moveTo(2); return false;'/>
-			<img src="style/bouteille1.svg" onClick='c.moveTo(0); return false;'/>
-			<img src="style/miel.svg" onClick='c.moveTo(1); return false;'/>
-			</div>
-		</div>
+		<div class="header"> </div>
+		<svg id="l_arrow" class="l_arrow"></svg>
+		<svg id="r_arrow" class="r_arrow"></svg>
 		<div class="conveyorbelt" id="coveyorbelt">
-
+			
+		</div>
+		<div class="bg3">
 		</div>
 		<div class="visualisations">
-			<div id="g1">
+			<div class="vente_bio_non_bio">
+				<div class="info">Le bio est en moyenne</div>
+				<div class="bar"></div>
+				<div class="pc">15%</div>
+				<div class="info2">plus cher que le non bio d'après nos relevés.</div>
 			</div>
 			<div id="g2">
+				<div id="title">FRUITS<br/>&amp;<br/>Légumes</div>
 			</div>
-			<div id="g3">
+			<div class="le_saviez_vous">
+				<img src="images/le_saviez_vous.svg"/>
+				<div>
+					Qui cum venisset ob haec festinatis itineribus Antiochiam, praestrictis palatii ianuis, contempto Caesare, quem videri decuerat, ad praetorium cum pompa sollemni
+				</div>
 			</div>
 		</div>
+		<div class="bg4">
+		</div>
 	</div>
-    <div class="section s2">Some section</div>
+    <div class="section slide2">
+    	<div class="header"></div>
+    	<div class="texts">
+    		<div>
+    			<h1>Distribution</h1>
+    			<div>Qui cum venisset ob haec festinatis itineribus Antiochiam, praestrictis palatii ianuis, contempto Caesare, quem videri decuerat, ad praetorium c </div>
+    		</div>
+    		<div>
+    			<h1>Importation</h1>
+    			<div>Qui cum venisset ob haec festinatis itineribus Antiochiam, praestrictis palatii ianuis, contempto Caesare, quem videri decuerat, ad praetorium c </div>
+    		</div>
+    		<div>
+    			<h1>Part du marché</h1>
+    			<div>Qui cum venisset ob haec festinatis itineribus Antiochiam, praestrictis palatii ianuis, contempto Caesare, quem videri decuerat, ad praetorium c </div>
+    		</div>
+    		
+    	</div>
+    	<div class="visualisations">
+    		<div>
+    			<div class="markbox">
+    				<div class="name">Grande<br/>distribution</div>
+    				<div class="box">
+    					<div class="pc">34%</div>
+    					<div class="picto"><img src="/images/supermarche.svg"/></div>
+    				</div>
+    			</div>
+    			<div class="markbox">
+    				<div class="name">Artisan</div>
+    				<div class="box">
+    					<div class="pc">24%</div>
+    					<div class="picto"><img src="/images/artisan.svg"/></div>
+    				</div>
+    			</div>
+    			<div class="markbox">
+    				<div class="name">Magasin<br/>Spécialisé</div>
+    				<div class="box">
+    					<div class="pc">14%</div>
+    					<div class="picto"><img src="/images/magasinbio.svg" style="width:80%;margin-left:10%;"/></div>
+    				</div>
+    			</div>
+    			<div class="markbox">
+    				<div class="name">Vente<br/>Directe</div>
+    				<div class="box">
+    					<div class="pc">4%</div>
+    					<div class="picto"><img src="/images/ventedirecte.svg" style="width:80%;margin-left:10%;"/></div>
+    				</div>
+    			</div>
+    		</div>
+    		<div>
+    			<!-- Jauge France -->
+    			<div class="jauge"><svg id="jauge_france"></svg></div>
+    		</div>
+    		<div>
+    		</div>
+    	</div>
+    	<div class="sliders">
+    		<div><div id="slider1"></div></div>
+    		<div><div id="slider2"></div></div>
+    		<div><div id="slider3"></div></div>
+    	</div>
+    	<div class="footer">
+    	</div>
+    </div>
     <div class="section s3">
 		<div class="header">
 			test
