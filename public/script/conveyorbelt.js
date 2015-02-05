@@ -33,6 +33,12 @@ ImageItem.prototype = {
 			ctx.drawImage(this.res, x, y, this.options.width*scale,this.options.height*scale);
 		}
 	},
+	setDatas: function(w,h,cx,cy){
+		this.options.width = w;
+		this.options.height = h;
+		this.options.centerX = cx;
+		this.options.centerY = cy;
+	},
 	width: function(){
 		return this.options.width;
 	},
@@ -42,13 +48,54 @@ ImageItem.prototype = {
 }
 
 
+function BeltGroup(){
+	this.items = [];
+	this.rect = {x0:0,y0:0,x1:0,y1:0};
+	this.height=0;
+	this.width=0;
+}
+BeltGroup.prototype = {
+	add: function(x,y,item){
+		this.items.push({x:x, y:y, item:item});
+		if(this.rect.x0 > x) this.rect.x0 = x;
+		if(this.rect.y0 > y) this.rect.y0 = y;
+		var x1 = x + item.width;
+		var y1 = y + item.height;
+		if(this.rect.x1 < x1) this.rect.x1 = x1;
+		if(this.rect.y1 < y1) this.rect.y1 = y1;
+		this.width = this.rect.x1-this.rect.x0;
+		this.height = this.rect.y1-this.rect.y0;
+	},
+	setMovement:function(type){
+		if(this.items.length == 0) return;
+		this.items[0].item.setMovement(type);
+	},
+	inMovement: function(){
+		if(this.items.length == 0) return false;
+		return this.items[0].item.inMovement();
+	},
+	update: function(){
+		if(this.items.length == 0) return;
+		this.items[0].item.update();
+		if(this.items[0].type == 0) return;
+		for(var i=1;i<this.items.length;i++){
+			this.items[i].item.rotation = this.items[0].item.rotation;
+		}
+	},
+	draw: function(ctx, x,y, scale){
+		for(var i=0;i<this.items.length;i++){
+			this.items[i].item.draw(ctx, x+this.items[i].x*scale, y+this.items[i].y*scale, scale);
+		}
+	}
+}
+
 function BeltItem(res, options){
 	this.res = res;
 	this.x = 0;
 	//Points de rotation
 	this.rotation = 0;
-	this.pr1 = (options && options.pr1)?options.pr1:{x:10,y:120};
-	this.pr2 = (options && options.pr2)?options.pr2:{x:58,y:120};
+	this.pr1 = (options && options.pr1)?options.pr1:{x:res.width/2,y:res.height};
+	this.pr2 = (options && options.pr2)?options.pr2:{x:res.width/2,y:res.height};
 	this.att = (options && options.att)?options.att:1;
 	this.width = (options && options.width)?options.width:this.res.width;
 	this.height = (options && options.height)?options.height:this.res.height;
@@ -81,7 +128,7 @@ BeltItem.prototype = {
 	},
 	update: function(){
 		if(this.type == 0) return;
-		this.pc++;
+		this.pc+=3;
 		if(this.pc >= 100){
 			this.pc = 0;
 			this.type = 0;
@@ -118,10 +165,26 @@ function ConveyorBelt(application, div){
 	//On met en place les valeurs de fonctionnement
 	this.selected_item = 0;//Item sélectionné
 	this.movement = false;//Aucun mouvement actuellement
+	
+	//On crée l'élément bouteilles
+	var bouteilles = new BeltGroup();
+	bouteilles.add(-40,0,new BeltItem(this.application.res("bouteille1"), {pr1:{x:2,y:127}, pr2:{x:34,y:127}}));
+	bouteilles.add(0,0,new BeltItem(this.application.res("bouteille2"), {pr1:{x:2,y:127}, pr2:{x:34,y:127}}));
+	bouteilles.add(40,0,new BeltItem(this.application.res("bouteille3"), {pr1:{x:2,y:127}, pr2:{x:34,y:127}}));
+	
+	var pommes = new BeltGroup();
+	pommes.add(30,-25,new BeltItem(this.application.res("pomme3")));
+	pommes.add(-50,-20,new BeltItem(this.application.res("pomme1")));
+	pommes.add(0,0,new BeltItem(this.application.res("pomme2")));
+	
+	var miel = new BeltGroup();
+	miel.add(-50,10, new BeltItem(this.application.res("miel"), {pr1:{x:2,y:106},pr2:{x:105,y:106}}));
+	miel.add(30,0, new BeltItem(this.application.res("sceptre")));
+	
 	this.items = [
-	new BeltItem(this.application.res("bouteilles"),{pr1:{x:45,y:120},pr2:{x:120,y:120}}),
-	new BeltItem(this.application.res("miel"),{pr1:{x:10,y:135},pr2:{x:130,y:135},width:120,height:125, att:0.5}),
-	new BeltItem(this.application.res("pomme"),{pr1:{x:10,y:135},pr2:{x:130,y:135},width:140,height:110, att:0.2})];
+	bouteilles,
+	miel,
+	pommes];
 	this.positions = [-0.3,0.1,0.5,0.9,1.3];
 	this.moving = false;
 	this.target = null;
@@ -162,6 +225,7 @@ ConveyorBelt.prototype = {
 					for(var i=0;i<5;i++)this.getItem(this.selected_item-2+i).setMovement(this.movement.direction);
 					this.movement = false;
 					this.target = null;
+					this.changeIcon(this.selected_item);
 					if(this.onStopMovement) this.onStopMovement.call(this, this.selected_item);
 				}
 				else{
@@ -177,23 +241,27 @@ ConveyorBelt.prototype = {
 		this.draw();
 		if(moving){
 			var time = (new Date().getTime()-start);
-			if(time >= 20) this.animation();
-			else{
-				var self = this;
-				setTimeout(function(){ self.animation(); },20-time);
-			}
+			if(time >= 40) time = 39;
+			var self = this;
+			setTimeout(function(){ self.animation(); },40-time);
 		}
 		else this.moving = false;
 	},
 	resize: function(){
 		this.width = this.application.width();
-		this.height = this.application.height()*0.44;
-		if(this.height > 450) this.height = 450;
-		this.speed_rate = Math.max(3,this.width/800);
-		this.scale = this.height/300
+		this.height = Math.ceil(this.application.height()*0.51);
+		//if(this.height > 500) this.height = 500;
+		this.speed_rate = Math.max(3,this.width/400);
+		this.scale = this.height/380
 		this.canvas.width = this.width;
 		this.dx = 0;
 		this.canvas.height = this.height;
+		
+		var s = this.scale*0.6;
+		this.b = {w:this.back.width*0.75*s, h:this.back.height*0.9*s, h2:this.back.height*0.65*s};
+		this.wheel.setDatas(this.back.height*0.49*s, this.back.height*0.49*s, this.back.height*0.49/2*s, this.back.height*0.49/2*s);
+		this.back_cache1 = undefined;
+		
 		this.draw();
 	},
 	getItem: function(index){
@@ -228,6 +296,16 @@ ConveyorBelt.prototype = {
 		//On lance l'événement ?
 		if(this.onStartMovement) this.onStartMovement.call(this, this.target==null?((this.selected_item-d)<0?(this.selected_item+this.items.length-d):((this.selected_item-d)%this.items.length)):this.target);
 	},
+	changeIcon: function(id){
+		$(".timeline img").removeClass('active');
+		$("#icon"+id).addClass('active');
+	},
+	changeTo: function(id){
+		if(id < 0 || id >= this.items.length || this.selected_item == id) return;
+		this.selected_item = id;
+		this.changeIcon(id);
+		this.draw();
+	},
 	moveTo: function(id){
 		if(id < 0 || id >= this.items.length || this.selected_item == id) return;
 		var d1 = id-this.selected_item;
@@ -246,7 +324,6 @@ ConveyorBelt.prototype = {
 			return true;
 		}
 		catch(e){
-			console.log(e);
 			return false;
 		}
 	},
@@ -259,6 +336,8 @@ ConveyorBelt.prototype = {
 		this.ctx.clearRect(0,0,this.width, this.canvas.height);
 		if(!this.canusecache){
 			var cx = -this.b.w*0.1;
+			this.ctx.fillStyle = "#D8C5B2";
+			this.ctx.fillRect(0, this.height-this.b.h*0.8, this.width, this.b.h*0.8);
 			while(cx < this.width){
 				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
 				this.wheel.draw(this.ctx, Math.round(cx+this.wheel.width()*0.26), this.height-this.wheel.height(),this.movement.pc*3.6*this.movement.direction,1);
@@ -266,8 +345,10 @@ ConveyorBelt.prototype = {
 			}
 		}
 		else{
-			var cx = 0;//-this.b.w*0.1;
+			var cx = 0;//-this.b.w*0.1
 			if(!this.back_cache1){
+			this.ctx.fillStyle = "#D8C5B2";
+				this.ctx.fillRect(0, this.height-this.b.h*0.8, this.b.w, this.b.h*0.8);
 				this.ctx.drawImage(this.back, Math.round(cx), this.height-this.b.h, this.b.w, this.b.h);
 				this.back_cache1 = this.ctx.getImageData(0,this.height-this.b.h,this.b.w,this.b.h);
 			}
@@ -276,10 +357,10 @@ ConveyorBelt.prototype = {
 			}
 			this.wheel.draw(this.ctx, Math.round(cx+this.wheel.width()*0.26), this.height-this.wheel.height(),this.movement.pc*3.6*this.movement.direction,1);
 			var b = this.ctx.getImageData(0,this.height-this.b.h,this.b.w*0.8,this.b.h);
-			cx += this.b.w*0.8;
+			cx += Math.floor(this.b.w*0.8);
 			while(cx < this.width){
 				this.ctx.putImageData(b,cx,this.height-this.b.h);
-				cx += this.b.w*0.8;
+			cx += Math.floor(this.b.w*0.8);
 			}
 		}
 		
