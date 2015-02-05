@@ -13,69 +13,7 @@ function DataStrophe(div){
 	this.slide1 = {};
 	this.current_slide = 1;
 	
-	this.dataset = {
-		1:{
-			name:"MIEL",
-			le_saviez_vous:"TEXTE",
-			distribution:{
-				annees:[2010,2011,2013],
-				values:[
-					[5,6,8,9],
-					[1,2.6,3,4.1],
-					[1,2,3,5]
-				]
-			},
-			importation:{
-				annees:[2010,2011],
-				values:[80,30]
-			},
-			bio:{
-				annees:[2010,2011],
-				values:[80,30]
-			}
-			
-		},
-		2:{
-			name:"POMME",
-			le_saviez_vous:"TEXTE",
-			distribution:{
-				annees:[2010,2011,2013],
-				values:[
-					[5,6,8,9],
-					[1,2,3,4],
-					[1,2,3,5]
-				]
-			},
-			importation:{
-				annees:[2011,2012],
-				values:[50,17]
-			},
-			bio:{
-				annees:[2010,2011,2013],
-				values:[80,30,30]
-			}
-		},
-		0:{
-			name:"Vin",
-			le_saviez_vous:"TEXTE",
-			distribution:{
-				annees:[2010,2011,2013],
-				values:[
-					[5,6,8,9],
-					[1,2,3,4],
-					[1,2,3,5]
-				]
-			},
-			importation:{
-				annees:[2010,2011],
-				values:[10,30]
-			},
-			bio:{
-				annees:[2010,2011],
-				values:[80,30]
-			}
-		}
-	};
+	this.dataset = null;
 	
 	this.selected = 1;
 	
@@ -90,8 +28,15 @@ function DataStrophe(div){
 	//Ressources
 	this.resources = new ResourceLoader();
 	this.resources.onLoad = function(){ 
-		self.init();
-		if(self.onLoad) self.onLoad.call();
+		$.ajax({
+			url:"data.json",
+			dataType:"json",
+			success: function(e){
+				this.dataset = e;
+				self.init();
+				if(self.onLoad) self.onLoad.call();
+			}
+		})
 	};
 	
 	this.resources.load("test","/style/tapis.png",{width:300,height:150});
@@ -110,6 +55,20 @@ function DataStrophe(div){
 	this.resources.load("eddy","/style/malou.png");
 	this.resources.load("wheel","/style/wheel.png",{width:49,height:49});
 	
+	
+	
+	var r = 0.5;
+	this.resources.load("biscuit1","/images/tapis/biscuit1.png",{width:271*r,height:90*r});
+	this.resources.load("biscuit2","/images/tapis/biscuit2.png",{width:240*r,height:134*r});
+	this.resources.load("biscuit3","/images/tapis/biscuit3.png",{width:127*0.6,height:176*0.6});
+	
+	this.resources.load("orange","/images/tapis/orange.png",{width:42,height:120});
+	
+	
+	this.resources.load("lait","/images/tapis/lait.png",{width:48,height:120});
+	
+	
+	this.resources.load("viande","/images/tapis/viande.png",{width:154,height:100});
 	
 	
 	this.resources.load("r_arrow", "/images/r_arrow.svg");

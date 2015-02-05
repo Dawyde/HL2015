@@ -181,10 +181,27 @@ function ConveyorBelt(application, div){
 	miel.add(-50,10, new BeltItem(this.application.res("miel"), {pr1:{x:2,y:106},pr2:{x:105,y:106}}));
 	miel.add(30,0, new BeltItem(this.application.res("sceptre")));
 	
+	var biscuit =  new BeltGroup();
+	console.log(this.application.res("biscuit3"))
+	console.log(this.application.res("biscuit1"))
+	biscuit.add(40,0,new BeltItem(this.application.res("biscuit3"), {pr1:{x:2,y:45},pr2:{x:133,y:45},att:0.5}))
+	biscuit.add(0,5,new BeltItem(this.application.res("biscuit2")))
+	biscuit.add(-50,5,new BeltItem(this.application.res("biscuit1"), {pr1:{x:2,y:40},pr2:{x:105,y:106}}))
+	
+	var orange = new BeltItem(this.application.res("orange"), {pr1:{x:2,y:119},pr2:{x:40,y:119}});
+	
+	var lait = new BeltItem(this.application.res("lait"), {pr1:{x:2,y:119},pr2:{x:45,y:119}});
+	
+	var viande = new BeltItem(this.application.res("viande"), {pr1:{x:2,y:100},pr2:{x:100,y:100}});
+	
 	this.items = [
 	bouteilles,
 	miel,
-	pommes];
+	pommes,
+	biscuit,
+	orange,
+	lait,
+	viande];
 	this.positions = [-0.3,0.1,0.5,0.9,1.3];
 	this.moving = false;
 	this.target = null;
